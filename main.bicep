@@ -15,10 +15,10 @@ param networkConfiguration object = {
 }
 @description('Whether public access is allowed to the key vault, either "disabled" or "allowed". Recommended is "disabled"')
 @allowed([
-  'disabled'
-  'allowed'
+  'Disabled'
+  'Enabled'
 ])
-param allowPublicAccess string = 'disabled'
+param allowPublicAccess string = 'Disabled'
 param protectionConfiguration object = {
   enableSoftDelete: true
   softDeleteRetentionInDays: 14

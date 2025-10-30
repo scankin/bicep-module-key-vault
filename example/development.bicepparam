@@ -3,7 +3,7 @@ using './example.bicep'
 param service = 'sja'
 param environment = 'development'
 param location = 'uksouth'
-param allowPublicAccess = 'allowed'
+param allowPublicAccess = 'Enabled'
 param sku = 'standard'
 param protectionConfiguration = {
   enableSoftDelete: false

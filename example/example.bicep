@@ -27,8 +27,8 @@ param protectionConfiguration object = {
   enablePurgeProtection: false
 }
 @allowed([
-  'disabled'
-  'allowed'
+  'Disabled'
+  'Enabled'
 ])
 param allowPublicAccess string
 param tags object
