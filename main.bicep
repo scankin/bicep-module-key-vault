@@ -102,6 +102,6 @@ output keyVaultProperties object = {
   properties: keyVault.properties
 }
 
-output privateEndpointProperties object = {
+output privateEndpointProperties object = privateEndpointSubnetId != 'null' ? {
   name: privateEndpoint.name
-}
+} : {}
