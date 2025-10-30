@@ -43,9 +43,33 @@ var locationShortCode = {
   uksouth: 'uks'
   ukwest: 'ukw'
 }
-
+// Variables for Resource Deployment
 var keyVaultName = '${service}-kv-${locationShortCode[location]}-${environmentShortCode[environment]}'
+var virtualNetworkName = '${service}-vnet-${locationShortCode[location]}-${environmentShortCode[environment]}'
+var virtualNetworkCidr = '10.0.0.0/24'
+var privateEndpointSubnetName = 'pe-subnet'
+var privateEndpointSubnetCidr = '10.0.0.0/25'
 
+//Temporary Resources for Private Endpoint Deployment
+resource virtualNetwork 'Microsoft.Network/virtualNetworks@2024-10-01' = {
+  name: virtualNetworkName
+  location: location
+  properties: {
+    addressSpace: {
+      addressPrefixes: [virtualNetworkCidr]
+    }
+  }
+}
+
+resource subnet 'Microsoft.Network/virtualNetworks/subnets@2024-10-01' = { 
+  parent: virtualNetwork
+  name: privateEndpointSubnetName
+  properties: {
+    addressPrefix: privateEndpointSubnetCidr
+  }
+}
+
+// Module Call
 module keyVault '../main.bicep' = {
   params: {
     keyVaultName: keyVaultName
@@ -53,6 +77,11 @@ module keyVault '../main.bicep' = {
     sku: sku
     protectionConfiguration: protectionConfiguration
     allowPublicAccess: allowPublicAccess
+    privateEndpointSubnetId: subnet.id
     tags: tags
   }
 }
+
+//Outputs 
+output keyVault object = keyVault.outputs.keyVaultProperties
+output privateEndpoint object = keyVault.outputs.privateEndpointProperties
