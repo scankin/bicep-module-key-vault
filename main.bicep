@@ -52,7 +52,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2025-05-01' = {
     enableSoftDelete: protectionConfiguration.enableSoftDelete
     softDeleteRetentionInDays: protectionConfiguration.softDeleteRetentionInDays
 
-    publicNetworkAccess: allowPublicAccess
+    publicNetworkAccess: (privateEndpointSubnetId != 'null') ? 'Disabled' : allowPublicAccess
     networkAcls: {
       bypass: networkConfiguration.bypass
       defaultAction: 'Deny'
