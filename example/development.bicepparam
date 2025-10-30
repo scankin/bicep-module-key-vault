@@ -7,7 +7,7 @@ param allowPublicAccess = 'allowed'
 param sku = 'standard'
 param protectionConfiguration = {
   enableSoftDelete: false
-  softDeleteRetentionInDays: 0
+  softDeleteRetentionInDays: 7
   enablePurgeProtection: false
 }
 param tags = {
