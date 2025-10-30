@@ -8,7 +8,7 @@ param sku = 'standard'
 param protectionConfiguration = {
   enableSoftDelete: false
   softDeleteRetentionInDays: 7
-  enablePurgeProtection: false
+  enablePurgeProtection: null
 }
 param tags = {
   bicep: true
