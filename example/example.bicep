@@ -77,7 +77,7 @@ module keyVault '../main.bicep' = {
     sku: sku
     protectionConfiguration: protectionConfiguration
     allowPublicAccess: allowPublicAccess
-    //privateEndpointSubnetId: subnet.id # Commenting out
+    privateEndpointSubnetId: subnet.id // Commenting out for optional deployment
     tags: tags
   }
 }
