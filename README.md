@@ -14,6 +14,8 @@ An example deployment can be found within the `./example` directory.
 | networkConfiguration | `object` | An object containing the configuration of allowed IPs and Allowed Virtual Networks with Service Endpoints to Azure Key Vault. Defaults to allow bypass to Azure Services,  an empty list of allowedIPs and Virtual Networks. This is ignored if allowPublicAccess is disabled | N | 
 | allowPublicAccess | `string` | Either `Disabled` or `Enabled`. | N |
 | protectionConfiguration | `object` | An object detailing the protection details for the key vault i.e. Soft Delete, Soft Delete Retention and Purge Protection | N |
+| privateEndpointSubnetId | `string` | The ID of the Subnet to Deploy The Private Endpoint To | N |
 
 ## Resources Created
 - 1x Azure Key Vault
+- (Optional) 1x Private Endpoint deployed to the specified Subnet ID
