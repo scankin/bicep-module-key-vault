@@ -7,42 +7,63 @@ param location string
   'premium'
   'standard'
 ])
-param sku string
+param sku string = 'standard'
 param networkConfiguration object = {
-  bypass: false
+  bypass: 'AzureServices'
   allowedIp: []
   allowedVirtualNetworks: []
 }
-param allowPublicAccess bool = false 
-
+@description('Whether public access is allowed to the key vault, either "disabled" or "allowed". Recommended is "disabled"')
+@allowed([
+  'disabled'
+  'allowed'
+])
+param allowPublicAccess string = 'disabled'
+param protectionConfiguration object = {
+  enableSoftDelete: true
+  softDeleteRetentionInDays: 14
+  enablePurgeProtection: true
+}
+param tags object = {
+  bicep: true 
+}
 
 resource keyVault 'Microsoft.KeyVault/vaults@2025-05-01' = {
   name: keyVaultName
   location: location
+  tags: tags
   properties: {
+    tenantId: deployer().tenantId
     createMode: 'default'
-    enabledForDeployment: true
-    enabledForDiskEncryption: true
-    enabledForTemplateDeployment: true
-    enablePurgeProtection: true
-    enableSoftDelete: true
-    enableRbacAuthorization: true
-    publicNetworkAccess: allowPublicAccess
     sku: {
       family: 'A'
       name: sku
     }
+
+    enabledForDeployment: true
+    enabledForDiskEncryption: true
+    enabledForTemplateDeployment: true
+    enableRbacAuthorization: true
+
+    enablePurgeProtection: protectionConfiguration.enablePurgeProtection
+    enableSoftDelete: protectionConfiguration.enableSoftDelete
+    softDeleteRetentionInDays: protectionConfiguration.softDeleteRetentionInDays
+
+    publicNetworkAccess: allowPublicAccess
     networkAcls: {
       bypass: networkConfiguration.bypass
       defaultAction: 'Deny'
-      ipRules: [for i in range(0, length(networkConfiguration.allowedIp)): {
-        value: networkConfiguration.allowedIp[i]
-      }]
-      virtualNetworkRules: [for i in range(0, length(networkConfiguration.allowedVirtualNetworks)): {
-        id: networkConfiguration.allowedVirtualNetworks[i]
-        ignoreMissingVnetServiceEndpoint: false
-      }]
+      ipRules: [
+        for i in range(0, length(networkConfiguration.allowedIp)): {
+          value: networkConfiguration.allowedIp[i]
+        }
+      ]
+      virtualNetworkRules: [
+        for i in range(0, length(networkConfiguration.allowedVirtualNetworks)): {
+          id: networkConfiguration.allowedVirtualNetworks[i]
+          ignoreMissingVnetServiceEndpoint: false
+        }
+      ]
     }
   }
-
 }

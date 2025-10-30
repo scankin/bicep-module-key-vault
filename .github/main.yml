@@ -17,6 +17,7 @@ on:
 
 env:
   DEPLOYMENT_FILE: ${{ github.workspace }}/example/example.bicep
+  DEPLOYMENT_PARAMETERS: ${{ github.workspace }}/example/development.bicepparam
   DEPLOYMENT_NAME: Module-KeyVault
   RESOURCE_GROUP_NAME: keyvault-${{ github.event.number }}
   DEPLOYMENT_LOCATION: ${{ github.event.inputs.location || 'uksouth' }}
@@ -26,6 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       deployment_file: ${{ env.DEPLOYMENT_FILE }}
+      deployment_parameters: ${{ env.DEPLOYMENT_PARAMETERS }}
       deployment_name: ${{ env.DEPLOYMENT_NAME }}
       resource_group_name: ${{ env.RESOURCE_GROUP_NAME }}
       deployment_location: ${{ env.DEPLOYMENT_LOCATION }}
@@ -51,10 +53,11 @@ jobs:
 
   Validate:
     needs: [Setup]
-    uses: scankin/bicep-workflows/.github/workflows/bicep-predeploy.yml@main
+    uses: scankin/bicep-workflows/.github/workflows/bicep-predeploy.yml@feature/parameter-file-support
     with: 
       location: ${{ needs.setup.outputs.deployment_location }}
       deployment_file: ${{ needs.setup.outputs.deployment_file }}
+      deployment_parameters: ${{ needs.setup.outputs.deployment_parameters }}
       resource_group_name: ${{ needs.setup.outputs.resource_group_name }}
       deployment_name: ${{ needs.setup.outputs.deployment_name }}
     secrets:
@@ -62,10 +65,11 @@ jobs:
       
   Deploy:
     needs: [Setup, Validate]
-    uses: scankin/bicep-workflows/.github/workflows/bicep-deploy.yml@main
+    uses: scankin/bicep-workflows/.github/workflows/bicep-deploy.yml@feature/parameter-file-support
     with:
       location: ${{ needs.setup.outputs.deployment_location }}
       deployment_file: ${{ needs.setup.outputs.deployment_file }}
+      deployment_parameters: ${{ needs.setup.outputs.deployment_parameters }}
       resource_group_name: ${{ needs.setup.outputs.resource_group_name }}
       deployment_name: ${{ needs.setup.outputs.deployment_name }}
     secrets:
