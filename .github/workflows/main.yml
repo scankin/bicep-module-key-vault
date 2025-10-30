@@ -53,7 +53,7 @@ jobs:
 
   Validate:
     needs: [Setup]
-    uses: scankin/bicep-workflows/.github/workflows/bicep-predeploy.yml@bug/fixing-resource-deployments
+    uses: scankin/bicep-workflows/.github/workflows/bicep-predeploy.yml@2.0.1
     with: 
       location: ${{ needs.setup.outputs.deployment_location }}
       deployment_file: ${{ needs.setup.outputs.deployment_file }}
@@ -65,7 +65,7 @@ jobs:
       
   Deploy:
     needs: [Setup, Validate]
-    uses: scankin/bicep-workflows/.github/workflows/bicep-deploy.yml@bug/fixing-resource-deployments
+    uses: scankin/bicep-workflows/.github/workflows/bicep-deploy.yml@2.0.1
     with:
       location: ${{ needs.setup.outputs.deployment_location }}
       deployment_file: ${{ needs.setup.outputs.deployment_file }}
