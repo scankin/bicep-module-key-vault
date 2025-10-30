@@ -24,9 +24,12 @@ param protectionConfiguration object = {
   softDeleteRetentionInDays: 14
   enablePurgeProtection: true
 }
+param privateEndpointSubnetId string = 'null'
 param tags object = {
   bicep: true 
 }
+
+var privateEndpointName = 'pe-${keyVaultName}'
 
 resource keyVault 'Microsoft.KeyVault/vaults@2025-05-01' = {
   name: keyVaultName
@@ -66,4 +69,32 @@ resource keyVault 'Microsoft.KeyVault/vaults@2025-05-01' = {
       ]
     }
   }
+}
+
+resource privateEndpoint 'Microsoft.Network/privateEndpoints@2024-10-01' = if (privateEndpointSubnetId != 'null') { 
+  name: privateEndpointName
+  location: location
+  properties: {
+    privateLinkServiceConnections: [{
+      name: privateEndpointName
+      properties: {
+        privateLinkServiceId: keyVault.id
+        groupIds: [
+          'vault'
+        ]
+      }
+    }]
+    subnet: {
+      id: privateEndpointSubnetId
+    }
+  }
+}
+
+output keyVaultProperties object = {
+  name: keyVault.name
+  properties: keyVault.properties
+}
+
+output privateEndpointProperties object = {
+  name: privateEndpoint.name
 }
