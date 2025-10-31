@@ -53,7 +53,7 @@ jobs:
         id: create-release
         run: |
           echo "Creating Release Number $RELEASE_NUMBER for "
-          gh release create $RELEASE_NUMBER --generate-notes --latest
+          gh release create $RELEASE_NUMBER -R ${{ env.repository_name }} --generate-notes --latest
           echo "Release $RELEASE_NUMBER" has been created
         env:
           RELEASE_NUMBER: ${{ steps.release-num-generator.outputs.RELEASE_NUMBER }}
