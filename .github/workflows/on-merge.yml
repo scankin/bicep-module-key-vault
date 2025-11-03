@@ -20,7 +20,7 @@ jobs:
     permissions:
       contents: write
     env:
-      repository_name: ${{ github.repository_owner }}/${{ github.repository }}
+      repository_name: ${{ github.repository }}
     steps:
       - name: Generate New Release Number
         id: release-num-generator
