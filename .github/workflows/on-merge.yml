@@ -17,6 +17,8 @@ jobs:
   create_release:
     name: "Create New Release"
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     env:
       repository_name: ${{ github.repository_owner }}/${{ github.repository }}
     steps:
