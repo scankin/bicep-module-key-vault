@@ -19,6 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    env:
+      repository_name: ${{ github.repository }}
     outputs:
       release_type: ${{ steps.generate-release-type.outputs.RELEASE_TYPE }}
     steps:
@@ -30,6 +32,9 @@ jobs:
           branchName="$(gh pr view $pullRequestId -R $REPOSITORY_NAME --json headRefName | jq -r '.[0].headRefName')"
           echo "Branch name is $branchName"
           echo "BRANCH_NAME=$branchName" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPOSITORY_NAME: ${{ env.repository_name }}
       - name: Generate Release Type
         id: generate-release-type
         run: |
@@ -47,6 +52,7 @@ jobs:
           echo "RELEASE_TYPE=$releaseType"" >> "$GITHUB_OUTPUT""
         env:
           BRANCH_NAME: ${{ steps.get-merged-branch-name.outputs.BRANCH_NAME }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   create_release:
     needs: ['generate_release_type']
