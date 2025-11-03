@@ -2,7 +2,7 @@ on:
   workflow_dispatch:
     inputs:
       RELEASE_TYPE:
-        required: true
+        required: false
         description: "The type of release to be created, either major, minor or patch"
         options:
           - 'major'
@@ -14,13 +14,51 @@ on:
     types: [closed]
 
 jobs:
+  generate_release_type:
+    name: "Generate Release Type"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      release_type: ${{ steps.generate-release-type.outputs.RELEASE_TYPE }}
+    steps:
+      - name: Get Merged Branch Name
+        id: get-merged-branch-name
+        run: |
+          echo "Retrieve last merged branch name"
+          pullRequestId="$(gh search prs -R $REPOSITORY_NAME --limit 1 --merged --json id | jq -r '.[0].id')"
+          branchName="$(gh pr view $pullRequestId -R $REPOSITORY_NAME --json headRefName | jq -r '.[0].headRefName')"
+          echo "Branch name is $branchName"
+          echo "BRANCH_NAME=$branchName" >> "$GITHUB_OUTPUT"
+      - name: Generate Release Type
+        id: generate-release-type
+        run: |
+          echo "Determining if release is a major or minor version or patch"
+          if [[ ${BRANCH_NAME,,} == *"release"* ]]; then
+            releaseType="major"
+          elif [[ ${BRANCH_NAME,,} == *"feature"* ]]; then
+            releaseType="minor"
+          elif [[ ${BRANCH_NAME,,} == *"fix"* ]]; then
+            releaseType="patch"
+          else
+            echo "Please use a branch name which contains either 'release', 'feature' or 'fix'"
+          fi
+          echo "Release type is: $releaseType"
+          echo "RELEASE_TYPE=$releaseType"" >> "$GITHUB_OUTPUT""
+        env:
+          BRANCH_NAME: ${{ steps.get-merged-branch-name.outputs.BRANCH_NAME }}
+
   create_release:
+    needs: ['generate_release_type']
     name: "Create New Release"
     runs-on: ubuntu-latest
     permissions:
       contents: write
     env:
       repository_name: ${{ github.repository }}
+      release_type: ${{ needs.generate_release_type.outputs.release_type }}
+    outputs:
+      RELEASE_NUMBER: ${{ steps.release-num-generator.outputs.RELEASE_NUMBER }}
     steps:
       - name: Generate New Release Number
         id: release-num-generator
@@ -47,7 +85,7 @@ jobs:
           echo "New Release Number is $releaseNumber"
           echo "RELEASE_NUMBER=$releaseNumber" >> "$GITHUB_OUTPUT"
         env:
-          RELEASE_TYPE: ${{ inputs.release_type }}
+          RELEASE_TYPE: ${{ env.release_type }}
           REPOSITORY_NAME: ${{ env.repository_name }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
