@@ -28,7 +28,7 @@ jobs:
         id: get-merged-branch-name
         run: |
           echo "Retrieve last merged branch name"
-          pullRequestId="$(gh search prs -R $REPOSITORY_NAME --limit 1 --merged --json number | jq '.[0].number')"
+          pullRequestId=$(gh search prs -R $REPOSITORY_NAME --limit 1 --merged --json number | jq '.[0].number')
           branchName="$(gh pr view $pullRequestId -R $REPOSITORY_NAME --json headRefName | jq -r '.[0].headRefName')"
           echo "Branch name is $branchName"
           echo "BRANCH_NAME=$branchName" >> "$GITHUB_OUTPUT"
