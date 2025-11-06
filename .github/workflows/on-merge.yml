@@ -1,13 +1,4 @@
 on: 
-  workflow_dispatch:
-    inputs:
-      RELEASE_TYPE:
-        required: false
-        description: "The type of release to be created, either major, minor or patch"
-        options:
-          - 'major'
-          - 'minor'
-          - 'patch'
   pull_request:
     branches:
       - main
