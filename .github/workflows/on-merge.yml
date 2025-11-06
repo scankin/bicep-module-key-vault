@@ -55,8 +55,8 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   create_release:
-    if: ${{ needs.generate_release_type.outputs.release_type != 'none' }}
     needs: ['generate_release_type']
+    if: ${{ needs.generate_release_type.outputs.release_type != 'none' }}
     name: "Create New Release"
     runs-on: ubuntu-latest
     permissions:
