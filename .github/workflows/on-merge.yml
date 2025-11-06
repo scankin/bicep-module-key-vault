@@ -61,4 +61,4 @@ jobs:
       repository_name: ${{ github.repository }}
       release_type: ${{ needs.generated_release_type.outputs.release_type }}
     secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
