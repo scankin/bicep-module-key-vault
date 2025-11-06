@@ -46,7 +46,7 @@ jobs:
           elif [[ ${BRANCH_NAME,,} == *"fix"* ]]; then
             releaseType="patch"
           else
-            releaseType="none"
+            releaseType="patch"
           fi
           echo "Release type is: $releaseType"
           echo "RELEASE_TYPE=$releaseType" >> "$GITHUB_OUTPUT"
