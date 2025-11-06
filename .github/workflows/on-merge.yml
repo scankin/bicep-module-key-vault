@@ -1,68 +1,24 @@
 on: 
-  workflow_dispatch:
-    inputs:
-      RELEASE_TYPE:
-        required: true
-        description: "The type of release to be created, either major, minor or patch"
-        options:
-          - 'major'
-          - 'minor'
-          - 'patch'
   pull_request:
     branches:
       - main
     types: [closed]
 
 jobs:
+  generate_release_type:
+    name: Generate Release Type
+    uses: scankin/github-automation/.github/workflows/generate-release-type.yml@1.0.0
+    with:
+      repository_name: ${{ github.repository }}
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   create_release:
-    name: "Create New Release"
-    runs-on: ubuntu-latest
-    env:
-      repository_name: ${{ github.repository_owner }}/${{ github.repository }}
-    steps:
-      - name: Generate New Release Number
-        id: release-num-generator
-        run: |
-          release="$(gh release list -R ${{ env.repository_name }} -L 1 --json tagName --exclude-pre-releases --exclude-drafts | jq -r '.[0].tagName')"
-          echo "Most Recent Release Tag: $release"
-          IFS='.'
-          read -ra versionNumbers <<< "$release"
-          if [[ ${RELEASE_TYPE,,} == "major" ]]; then
-            echo "Updating Major Version"
-            versionNumber=$((${versionNumbers[0]} + 1))
-            releaseNumber="$versionNumber.0.0"
-          elif [[ ${RELEASE_TYPE,,} == "minor" ]]; then
-            echo "Updating Minor Version"
-            versionNumber=$((${versionNumbers[1]} + 1))
-            releaseNumber="${versionNumbers[0]}.$versionNumber.0"
-          elif [[ ${RELEASE_TYPE,,} == "patch" ]]; then
-            echo "Updating Patch Version"
-            versionNumber=$((${versionNumbers[2]} + 1))
-            releaseNumber="${versionNumbers[0]}.${versionNumbers[1]}.$versionNumber"
-          else
-            echo "Please enter a version update of Major, Minor or Patch. You Entered $RELEASE_TYPE"
-          fi
-          echo "New Release Number is $releaseNumber"
-          echo "RELEASE_NUMBER=$releaseNumber" >> "$GITHUB_OUTPUT"
-        env:
-          RELEASE_TYPE: ${{ inputs.release_type }}
-          REPOSITORY_NAME: ${{ env.repository_name }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Create New Release
-        id: create-release
-        run: |
-          echo "Creating Release Number $RELEASE_NUMBER for "
-          gh release create $RELEASE_NUMBER --generate-notes --latest
-          echo "Release $RELEASE_NUMBER" has been created
-        env:
-          RELEASE_NUMBER: ${{ steps.release-num-generator.outputs.RELEASE_NUMBER }}
-          REPOSITORY_NAME: ${{ env.repository_name }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-
-
-
-
-      
-        
+    name: Create Release
+    needs: ['generate_release_type']
+    uses: scankin/github-automation/.github/workflows/create-release.yml@1.0.0
+    with:
+      repository_name: ${{ github.repository }}
+      release_type: ${{ needs.generate_release_type.outputs.release_type }}
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
