@@ -59,6 +59,6 @@ jobs:
     uses: scankin/github-automation/.github/workflows/create-release.yml@feature/adding-release-workflow
     with:
       repository_name: ${{ github.repository }}
-      release_type: ${{ needs.generated_release_type.outputs.release_type }}
+      release_type: ${{ needs.generate_release_type.outputs.release_type }}
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
