@@ -46,7 +46,7 @@ jobs:
           elif [[ ${BRANCH_NAME,,} == *"fix"* ]]; then
             releaseType="patch"
           else
-            echo "Please use a branch name which contains either 'release', 'feature' or 'fix'"
+            releaseType="none"
           fi
           echo "Release type is: $releaseType"
           echo "RELEASE_TYPE=$releaseType"" >> "$GITHUB_OUTPUT""
@@ -55,6 +55,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   create_release:
+    if: ${{ needs.generate_release_type.outputs.release_type != "none" }}
     needs: ['generate_release_type']
     name: "Create New Release"
     runs-on: ubuntu-latest
