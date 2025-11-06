@@ -15,6 +15,7 @@ on:
 
 jobs:
   generate_release_type:
+    name: Generate Release Type
     uses: scankin/github-automation/.github/workflows/generate-release-type.yml@feature/adding-release-workflow
     with:
       repository_name: ${{ github.repository }}
@@ -22,6 +23,7 @@ jobs:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   create_release:
+    name: Create Release
     needs: ['generate_release_type']
     uses: scankin/github-automation/.github/workflows/create-release.yml@feature/adding-release-workflow
     with:
