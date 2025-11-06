@@ -56,7 +56,7 @@ jobs:
 
   create_release:
     needs: ['generate_release_type']
-    if: ${{ contains(fromJSON('["major", "minor", "patch"]'), needs.generate_release_type.outputs.release_type ) }}
+    if: ${{ contains(fromJSON('["major", "minor", "patch"]'), needs.generate_release_type.outputs.event_name) }}
     name: "Create New Release"
     runs-on: ubuntu-latest
     permissions:
